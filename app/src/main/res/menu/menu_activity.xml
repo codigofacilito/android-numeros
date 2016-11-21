@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item android:id="@+id/camara"
+        android:title="@string/camara"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/camara"/>
+
+    <item android:id="@+id/enfoque"
+        android:title="@string/enfoque"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/enfoque"/>
+</menu>
