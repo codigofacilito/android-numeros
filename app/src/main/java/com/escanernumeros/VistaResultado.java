@@ -1,8 +1,6 @@
 package com.escanernumeros;
 
-/**
- * Created by Marines on 15/09/2016.
- */
+
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -15,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+/**
+ * Created by Marines on 15/09/2016.
+ */
  public class VistaResultado extends AppCompatActivity {
 
     private Bitmap bmp;
@@ -43,17 +43,6 @@ import android.widget.TextView;
 
     }
 
-     ///Metodo back para regresar
-     @Override
-     public boolean onKeyDown(int keyCode, KeyEvent event)  {
-         if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
-                 && keyCode == KeyEvent.KEYCODE_BACK
-                 && event.getRepeatCount() == 0) {
-             onBackPressed();
-             return true;
-         }
-         return super.onKeyDown(keyCode, event);
-     }
 
 
 

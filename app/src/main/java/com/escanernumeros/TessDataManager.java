@@ -1,8 +1,6 @@
 package com.escanernumeros;
 
-/**
- * Created by Marines on 15/09/2016.
- */
+
 import android.content.Context;
 import android.util.Log;
 
@@ -12,9 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 /**
- * Created by Fadi on 6/11/2014.
+ * Created by Marines on 15/09/2016.
  */
 public class TessDataManager {
 

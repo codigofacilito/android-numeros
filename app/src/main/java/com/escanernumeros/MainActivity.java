@@ -2,97 +2,118 @@ package com.escanernumeros;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-
+/**
+ * Created by Marines on 15/09/2016.
+ */
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback,
         Camera.PictureCallback, Camera.ShutterCallback {
 
+        Toolbar toolbar;
+        VistaRectangunlo rectangulo;
+        //Layout donde se vizualizara la imagen de la camara
+        SurfaceView surfaceView;
+        //Obtener la confCamara de la camara
+        ConfCamara confCamara;
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+        }
 
 
-    FocusBoxView focusBox;
-    //Layout donde se vizualizara la imagen de la camara
-    SurfaceView surfaceView;
-    //Obtener la confCamara de la camara
-    ConfCamara confCamara;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
 
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
 
-        //Verificamos que la camara este encendida e iniciamos
-        if (confCamara != null && !confCamara.EstaEncendido()) {
+            //si la camara esta apagada pero ya hay una vista solo iniciamos la camara
+            if (confCamara != null && !confCamara.estaEncendido()) { //Solo es necesario iniciar la camara
+                confCamara.start();
+            }
+
+            //si la camara esta encendida y hay una vista solo retornamos
+            if (confCamara != null && confCamara.estaEncendido()) {// Todo bien
+                return;
+            }
+
+            //Si no cumple ninguna condicion entonces creamos una vista e iniciamos
+            confCamara = ConfCamara.Nuevo(holder);//Tenemos que crear una nueva vista e inicar
             confCamara.start();
         }
 
-        if (confCamara != null && confCamara.EstaEncendido()) {
-            return;
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
         }
 
-        confCamara = ConfCamara.Nuevo(holder);
-        confCamara.start();
-    }
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        surfaceView = (SurfaceView) findViewById(R.id.camera_frame);
-        focusBox = (FocusBoxView) findViewById(R.id.focus_box);
-
-
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (confCamara != null && confCamara.EstaEncendido()) {
-            confCamara.stop();
         }
 
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.removeCallback(this);
-    }
+        @Override
+        protected void onResume() {
+            super.onResume();
 
-    @Override
-    public void onPictureTaken(byte[] data, Camera camera) {
+            //llamamos la vista de la camara
+            surfaceView = (SurfaceView) findViewById(R.id.camera_frame);
 
+            //llamamos el rectangulo
+            rectangulo = (VistaRectangunlo) findViewById(R.id.focus_box);
+
+
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.addCallback(this);
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+
+        @Override
+        protected void onPause() {
+            super.onPause();
+
+            //Verificamos que exista una vista y que este encenndido entonces detenemos
+            if (confCamara != null && confCamara.estaEncendido()) {
+                confCamara.stop();
+            }
+
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
+        }
+
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+        //Si no tomo nada entonces no se retorna nada
         if (data == null) {
             return;
         }
 
-        Bitmap bmp = Tools.getFocusedBitmap(this, camera, data, focusBox.getRectangulo());
+        //Si se tomo la foto data contiene algo entonces obtenemos la imagen del rectangulo
+        Bitmap bmp = Tools.getImagenEnfocada(this, camera, data, rectangulo.getRectangulo());
 
 
+        //Iniciamos el Asyntask serial_executor ejecutar una tarea a la vez
         new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
 
     }
@@ -112,29 +133,35 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.camara:
-                    if(confCamara != null && confCamara.EstaEncendido()){
+                    if(confCamara != null && confCamara.estaEncendido()){
                         confCamara.takeShot(this, this, this);
                     }
 
-                    if(confCamara!=null && confCamara.EstaEncendido()){
-                        confCamara.requestFocus();
-                }
                 return true;
             case R.id.enfoque:
-
+                if(confCamara!=null && confCamara.estaEncendido()){
+                    confCamara.enfoque();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-    public String detectText(Bitmap bitmap) {
 
+
+    public String detectarTexto(Bitmap bitmap) {
+        //
+        String listaNegra="!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
+                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?";
+
+
+        String listaBlanca="1234567890";
         TessDataManager.initTessTrainedData(getApplicationContext());
         TessBaseAPI tessBaseAPI = new TessBaseAPI();
         String path =TessDataManager.getTesseractFolder();
-
+        //Modo depuracion para tener un ccontrol al reconocer los caracteres
         tessBaseAPI.setDebug(true);
-        tessBaseAPI.init(path, "eng"); //Init the Tess with the trained data file, with english language
+        tessBaseAPI.init(path, "eng"); //Iniciara en el leguaje ingles
 
         //Separar palabras
         tessBaseAPI.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT);
@@ -143,15 +170,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         tessBaseAPI.setImage(bitmap);
 
         //Lista blanco donde vamos a permitir solo los caracteres mencionados
-        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
+        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST,listaBlanca );
 
         //Lista negrado donde se restringen los caracteres mencionados
-        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, listaNegra);
 
         //Aplicamos formato y nos regresa el texto de la imagen
         String text = tessBaseAPI.getUTF8Text();
-        System.out.println("text1 "+text);
         //Fianlizamos elTessBase
         tessBaseAPI.end();
 
@@ -173,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     return null;
                 }
 
+                //utilizar instanceof para verificar si parametro 0 es tipo activiti y parametro 1 es imagen sino son retornar null
                 if(!(params[0] instanceof Activity) || !(params[1] instanceof Bitmap)) {
                     return null;
                 }
@@ -184,18 +210,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 if(context == null || bmp == null) {
                     return null;
                 }
-
-                int rotate = 0;
-
-                if(params.length == 3 && params[2]!= null && params[2] instanceof Integer){
-                    rotate = (Integer) params[2];
-                }
-
-                if(rotate >= -180 && rotate <= 180 && rotate != 0)
-                {
-                    bmp = Tools.preRotateBitmap(bmp, rotate);
-                }
-                String result = detectText(bmp);
+                String result = detectarTexto(bmp);
                 System.out.println("Haciendo "+result);
                 return result;
 
@@ -206,7 +221,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             return null;
         }
 
-        @Override
+
+            @Override
         protected void onPostExecute(String s) {
 
             if(s == null || bmp == null || context == null)

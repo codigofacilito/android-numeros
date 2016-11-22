@@ -1,9 +1,7 @@
 package com.escanernumeros;
 
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.SurfaceHolder;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -11,13 +9,13 @@ import java.io.IOException;
  * Created by Marines on 15/09/2016.
  */
 
-public class ConfCamara {
+    public class ConfCamara {
 
-    boolean Encendido;
-    //Camara librería de Hardware
-    Camera camara;
-    //Es el modulo que comunica la camara con el layout
-    SurfaceHolder surfaceHolder;
+        boolean Encendido;
+        //Camara librería de Hardware
+        Camera camara;
+        //Es el modulo que comunica la camara con el layout
+        SurfaceHolder surfaceHolder;
 
     //Metodo para verificar si el dispositivo es compatible con el enfoque automatico
     Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
@@ -27,7 +25,8 @@ public class ConfCamara {
         }
     };
 
-    public boolean EstaEncendido() {
+    //Metodo para verificar si la camara esta encendida
+    public boolean estaEncendido() {
 
         return Encendido;
     }
@@ -43,11 +42,14 @@ public class ConfCamara {
         return  new ConfCamara(surfaceHolder);
     }
 
-    public void requestFocus() {
+    public void enfoque() {
         if (camara == null)
             return;
 
-        if (EstaEncendido()) {
+        if (estaEncendido()) {
+
+            //Si la camara esta encendida entonces agregamos el enfoque
+            //Se coloca en un try catch por si la camara no cuenta con enfoque
             try {
                 camara.autoFocus(autoFocusCallback);
             }catch (Exception e){
@@ -66,8 +68,11 @@ public class ConfCamara {
 
         try {
 
+            //Para vizualizar en tiempo real
             this.camara.setPreviewDisplay(this.surfaceHolder);
-            this.camara.setDisplayOrientation(90);//Portrait Camera
+            //Para asegurar la correcta orientación de la vista previa.
+            this.camara.setDisplayOrientation(90);
+            //iniciar la vista
             this.camara.startPreview();
 
             Encendido = true;
@@ -80,18 +85,22 @@ public class ConfCamara {
         if(camara != null){
             camara.release();
             camara = null;
+
+        //apagamos la camara;
         }
 
         Encendido = false;
 
     }
 //ShutterCallback señalar el momento de la captura de la imagen en tiempo real.
-    // devolución de llamada utilizado para suministrar datos de imagen a partir de una captura de fotos.
 
-    public void takeShot(Camera.ShutterCallback shutterCallback,
+//PictureCallbackla devolución de llamada para datos de imagen sin comprimir
+
+//Devolucion de datos de imagen
+                         public void takeShot(Camera.ShutterCallback shutterCallback,
                          Camera.PictureCallback rawPictureCallback,
                          Camera.PictureCallback jpegPictureCallback ){
-        if(EstaEncendido()){
+        if(estaEncendido()){
             camara.takePicture(shutterCallback, rawPictureCallback, jpegPictureCallback);
         }
     }
@@ -101,8 +110,8 @@ public class ConfCamara {
         try {
             return Camera.open();
 
-        } catch (Exception e) {
-            return null;
+        } catch (Exception e){
+        return null;
         }
     }
 }

@@ -21,12 +21,6 @@ public class Tools {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    public static Bitmap preRotateBitmap(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.preRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
-    }
-
     public static enum ScalingLogic {
         CROP, FIT
     }
@@ -117,9 +111,9 @@ public class Tools {
         return scaledBitmap;
     }
 
-    public static Bitmap getFocusedBitmap(Context context, Camera camera, byte[] data, Rect box){
-        Point CamRes = FocusBoxUtils.getCameraResolution(context, camera);
-        Point ScrRes = FocusBoxUtils.geTamañoPantalla(context);
+    public static Bitmap getImagenEnfocada(Context context, Camera camera, byte[] data, Rect box){
+        Point CamRes = Utilities.getResolucionCamara(context, camera);
+        Point ScrRes = Utilities.geTamañoPantalla(context);
 
         int SW = ScrRes.x;
         int SH = ScrRes.y;
