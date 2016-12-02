@@ -32,8 +32,7 @@ import java.io.IOException;
     }
 
     //Constructor que recive una variable tipo SurfaceHolder esta
-    //permitira controlar el tamaño y formato de superficie, editar los píxeles en la superficie, y monitorizar
-    // los cambios en la superficie.
+    //permitira controlar el tamaño y formato de superficie
     private ConfCamara(SurfaceHolder surfaceHolder){
         this.surfaceHolder = surfaceHolder;
     }

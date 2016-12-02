@@ -93,15 +93,16 @@ public class VistaRectangunlo extends View {
 
                 private void actualizarRectangulo(int ancho, int alto) {
 
-                    //nos servira para verificar los limites de nuestro rectangulo  si es menor en
+                    //Verificar que el nuevo largo respete el limite del alto definido anteriormente y
+                    //Verificar que el nuevo alto respete el limite del alto definido anteriormente
                     int NuevoLargo = (Rectangulo.width() + ancho > Puntos.x - 4 || Rectangulo.width() + ancho < LimiteAncho)
                             ? 0: Rectangulo.width() + ancho;
 
-                    //Verificar que el nuevo alto  no sobrepase el alto definido anteriormente si lo sobre pasa el nuevo sera 0
-                    //pero si no lo el tamaño anterior se le agregara el nuevo
                     int NuevoAlto = (Rectangulo.height() + alto > Puntos.y - 4 || Rectangulo.height() + alto < LimiteAlto)
                             ? 0
                             : Rectangulo.height() + alto;
+
+
 
                     int X = (Puntos.x - NuevoLargo) / 2;
 
@@ -112,7 +113,7 @@ public class VistaRectangunlo extends View {
 
                     int AnchoR=X + NuevoLargo;
                     int altoR=Y + NuevoAlto;
-                    //Rec(izquierda, arriba,derecha, abajo)
+                    //Rec(x, y,ancho, alto)
                     Rectangulo = new Rect(X, Y, AnchoR, altoR);
                 }
 
@@ -135,7 +136,7 @@ public class VistaRectangunlo extends View {
                                         ultimoTouchY = 0;
                                         return true;
                                     case MotionEvent.ACTION_MOVE:
-                                        //SE agregan la posicion de x y y al tocar
+                                        //SE agregan la posicion de X y Y al tocar
                                         int touchX = (int) event.getX();
                                         int touchY = (int) event.getY();
                                         try {
@@ -308,7 +309,7 @@ public class VistaRectangunlo extends View {
                                 }
                             } catch (NullPointerException e) {
                             }
-                            v.invalidate();//Para que sirve
+                            v.invalidate();
                             ultimoTouchX = touchX;
                             ultimoTouchY = touchY;
 

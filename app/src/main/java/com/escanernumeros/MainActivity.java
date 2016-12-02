@@ -47,17 +47,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
 
-            //si la camara esta apagada pero ya hay una vista solo iniciamos la camara
+            //si la camara esta apagada pero hay una configuracion iniciamos la camara
             if (confCamara != null && !confCamara.estaEncendido()) { //Solo es necesario iniciar la camara
                 confCamara.start();
             }
 
-            //si la camara esta encendida y hay una vista solo retornamos
+            //si la camara esta encendida y hay una configuracion solo retornamos
             if (confCamara != null && confCamara.estaEncendido()) {// Todo bien
                 return;
             }
 
-            //Si no cumple ninguna condicion entonces creamos una vista e iniciamos
+            //Si no cumple ninguna condicion entonces creamos una configuracion e iniciamos
             confCamara = ConfCamara.Nuevo(holder);//Tenemos que crear una nueva vista e inicar
             confCamara.start();
         }
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         protected void onPause() {
             super.onPause();
 
-            //Verificamos que exista una vista y que este encenndido entonces detenemos
+            //Verificamos que exista una configuracion y que este encendido entonces detenemos
             if (confCamara != null && confCamara.estaEncendido()) {
                 confCamara.stop();
             }
@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_activity, menu);
         return true;
     }
@@ -159,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         TessDataManager.initTessTrainedData(getApplicationContext());
         TessBaseAPI tessBaseAPI = new TessBaseAPI();
         String path =TessDataManager.getTesseractFolder();
-        //Modo depuracion para tener un ccontrol al reconocer los caracteres
+        //Modo depuracion para tener un control al reconocer los caracteres
         tessBaseAPI.setDebug(true);
-        tessBaseAPI.init(path, "eng"); //Iniciara en el leguaje ingles
+        tessBaseAPI.init(path, "eng"); //Iniciara en el idioma ingles
 
         //Separar palabras
         tessBaseAPI.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT);
@@ -198,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     return null;
                 }
 
-                //utilizar instanceof para verificar si parametro 0 es tipo activiti y parametro 1 es imagen sino son retornar null
+                //utilizar instanceof para verificar si parametro 0 es tipo activity y parametro 1 es imagen sino  retornar null
                 if(!(params[0] instanceof Activity) || !(params[1] instanceof Bitmap)) {
                     return null;
                 }
